@@ -55,33 +55,76 @@ public class MP1 {
        
         // my code starts
 
-        ArrayList<String> tokenArray = new ArrayList<String> ();
+        // Store all the tokens(words) in "token - frequency" pair
+        HashMap<String, Integer> tokenRecord = new HashMap<String, Integer> ();
 
-        /* 1. Divide each sentence into a list of words using delimiters provided in the "delimiters" variable. */
-        /* 2. Make all the tokens lowercase and remove any leading and trailing spaces. */
-        /* 3. Ignore all common words provided in the "stopWordsArray" variable. */
         try(BufferedReader inputFileReader = new BufferedReader(new FileReader(inputFileName))) {
             String curLine;
+            String[] allTitles = new String[50000];
+            int curNum = 0;
+
+            // Read the lines (titles) of input file and save to an array of String
             while((curLine = inputFileReader.readLine()) != null) {
-                StringTokenizer curStringTokenizer = new StringTokenizer(curLine.toLowerCase(), delimiters);
+                    allTitles[curNum] = curLine;
+                    curNum ++;
+            }
+
+            // Generate the "certain indexes"
+            Integer[] certainIndexes= getIndexes();
+
+            // Handle only the lines (titles) with "cetain indexes"
+            // Notice: It is possible to have an index appear several times. 
+            // Notice: In this case, process the index multiple times.
+            for (int i = 0; i < 10000; i ++) {
+                int curIndex = certainIndexes[i];
+
+                // Divide each String (line/title) into a list of words using delimiters provided in the "delimiters" variable
+                // Make the strings (thus tokens) lowercase
+                StringTokenizer curStringTokenizer = new StringTokenizer(allTitles[curIndex].toLowerCase(), delimiters);
+                
                 while(curStringTokenizer.hasMoreTokens()) {
+                    // Remove leading and trailing spaces
                     String curToken = curStringTokenizer.nextToken().trim();
+
+                    // Ignore common words provided in the "stopWordsArray" variable
                     if (! (Arrays.asList(stopWordsArray).contains(curToken))) {
-                        tokenArray.add(curToken);
+                        // If the token is a new one, add a new entry in the HashMap, initial frequency is set as 1
+                        // If not, increment the frequency of the token by 1 
+                        if (tokenRecord.containsKey(curToken)) {
+                            tokenRecord.put(curToken, tokenRecord.get(curToken) + 1);
+                        } else {
+                            tokenRecord.put(curToken, 1);
+                        }
                     }
                 }
             }
-        }
 
-        /*
-        for(int i = 0; i < tokenArray.size(); i ++) {
-            System.out.println("Cur: " + tokenArray.get(i));
+            // Sort the "token - frequency" pairs by frequency in decending order
+            TreeMap<String, Integer> sortedRecord = SortByValue(tokenRecord);
+ 
+            // Get the top 20 items 
+            Set curSet = sortedRecord.entrySet();
+            Iterator curIterator = curSet.iterator();
+
+            int k = 0;
+
+            while ((curIterator.hasNext()) && (k < 20)) {
+                Map.Entry curEntry = (Map.Entry)curIterator.next();
+                ret[k] = curEntry.getKey().toString();
+                k ++;
+            }
         }
-        */
 
         // my code ends
 
         return ret;
+    }
+
+    public static TreeMap<String, Integer> SortByValue(HashMap<String, Integer> curHashMap) {
+        ValueComparator vc = new ValueComparator(curHashMap);
+        TreeMap<String, Integer> sortedMap = new TreeMap<String, Integer>(vc);
+        sortedMap.putAll(curHashMap);
+        return sortedMap;
     }
 
     public static void main(String[] args) throws Exception {
@@ -99,3 +142,30 @@ public class MP1 {
         }
     }
 }
+
+// To compare/sort "token - frequency" pairs
+class ValueComparator implements Comparator<String> {
+    Map<String, Integer> map;
+ 
+    public ValueComparator(Map<String, Integer> base) {
+        this.map = base;
+    }
+ 
+    public int compare(String a, String b) {
+        if (map.get(a) > map.get(b)) {
+            return -1;
+        } else if (map.get(a) < map.get(b)) {
+            return 1;
+        } else {
+            if (a.compareTo(b) > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+}
+
+
+
+
