@@ -1,4 +1,5 @@
-import java.io.File;
+import java.io.*;
+// import java.io.File;
 import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -52,7 +53,33 @@ public class MP1 {
     public String[] process() throws Exception {
         String[] ret = new String[20];
        
-        //TODO
+        // my code starts
+
+        ArrayList<String> tokenArray = new ArrayList<String> ();
+
+        /* 1. Divide each sentence into a list of words using delimiters provided in the "delimiters" variable. */
+        /* 2. Make all the tokens lowercase and remove any leading and trailing spaces. */
+        /* 3. Ignore all common words provided in the "stopWordsArray" variable. */
+        try(BufferedReader inputFileReader = new BufferedReader(new FileReader(inputFileName))) {
+            String curLine;
+            while((curLine = inputFileReader.readLine()) != null) {
+                StringTokenizer curStringTokenizer = new StringTokenizer(curLine.toLowerCase(), delimiters);
+                while(curStringTokenizer.hasMoreTokens()) {
+                    String curToken = curStringTokenizer.nextToken().trim();
+                    if (! (Arrays.asList(stopWordsArray).contains(curToken))) {
+                        tokenArray.add(curToken);
+                    }
+                }
+            }
+        }
+
+        /*
+        for(int i = 0; i < tokenArray.size(); i ++) {
+            System.out.println("Cur: " + tokenArray.get(i));
+        }
+        */
+
+        // my code ends
 
         return ret;
     }
