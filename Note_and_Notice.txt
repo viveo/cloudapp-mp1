@@ -1,0 +1,39 @@
+// Note 
+
+1. My user ID is 6697192
+
+// Notice
+
+1. There are two ways of reading and processing the input file:
+	(A) While reading the file by line, process the current line. (Reading and processing are carried out "simultaneously". When reading is done, processing is also finished.) 
+	(B) Read the file by line to an array of String without processing (Store the data first, and then carry out processing.)
+
+	Here, (B) is used because the special requirement to "process only the titles with certain indexes". It is possible to have an index appear several times, in which case, the index should be processed multiple times. If using (A), such cases cannot be performed correctly.
+
+	For example, in method (A), to apply the special requirement of "certain indexes", when reading and processing a line, the index of current line should be compared to these "certain indexes" in order to get process or simply ignored. However, in this way, the case of "an index appearing multiple times" will not be "lost" and the final result will be incorrect.
+
+	The key is that, because of the case of index appearing multiple time, "certain index" should be used as "base" to calculate the frequency.
+
+	除了input.txt每一行本身的index外，还有一项附加的、特殊的要求是“只处理某些特定的index”，这些“特定的index”可能会重复出现。比如，index=33在“特定的index”中，而且出现了五次，说明要对第33行的word处理五次，也就是说要这些word的频率要加五（而不是一）。
+
+	如果在读入每一行的同时就直接做处理，那么就是需要用当前行的index去和“特定的index”比对，来决定是保存并作后续处理抑或是忽略。这样存在的问题是，在“特定的index”中重复出现的这一信息被丢弃（抑或说，无法处理）。以上面的例子为证，index=33确实被处理了，但是次数是一，最终计算错误。
+
+	所以，只能采用(B)方法，在先把input.txt文档的所有内容都读入内存后，再以“特定的index”为基准，来做运算。
+
+2. To sort HashMap<String, Integer> by frequency(the Integer), TreeMap structure and ValueComparator are used for sorting. 
+
+3. The sorting is not only by frequency, but also by lexigraphy. As a result, in the "regular" code of ValueComparator, besides comparing the frequency (the Integer) by comparing map.get(a) and map.get(b), additional comparison of the stings themselves (a.compareTo(b)) needs to be performed if map.get(a)==map.get(b).
+
+    public int compare(String a, String b) {
+        if (map.get(a) > map.get(b)) {
+            return -1;
+        } else if (map.get(a) < map.get(b)) {
+            return 1;
+        } else {
+            if (a.compareTo(b) > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
